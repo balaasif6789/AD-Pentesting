@@ -1,0 +1,54 @@
+Domain: TEST.local
+User Enumeration:
+  Windows:
+    net user
+    net user /domain
+    net user [username]
+    net user [username] /domain
+    wmic useraccount
+  Mac:
+    dscl . ls /Users
+    dscl . read /Users/[username]
+    dscl "/Active Directory/TEST/All Domains" ls /Users
+    dscl "/Active Directory/TEST/All Domains" read /Users/[username]
+    dscacheutil -q user
+  LDAP:
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(objectclass=user)"
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(&(objectclass=user)(name=[username]))"
+
+Computer Enumeration:
+  Windows:
+    net group "Domain Computers" /domain
+    net group "Domain Controllers" /domain
+  Mac:
+    dscl "/Active Directory/TEST/All Domains" ls /Computers
+    dscl "/Active Directory/TEST/All Domains" read "/Computers/[compname]$"
+  LDAP:
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(objectclass=computer)"
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(&(objectclass=computer)(name=[computername]))"
+
+Group Enumeration:
+  Windows:
+    net localgroup
+    net group /domain
+    net localgroup [groupname]
+    net group [groupname] /domain
+    wmic group
+  Mac:
+    dscl . ls /Groups
+    dscl . read "/Groups/[groupname]"
+    dscl "/Active Directory/TEST/All Domains" ls /Groups
+    dscl "/Active Directory/TEST/All Domains" read "/Groups/[groupname]"
+  LDAP:
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(objectclass=group)"
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(&(objectclass=group)(name=[groupname]))"
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(&(objectclass=group)(name=*admin*))"
+
+Domain Information:
+  Windows:
+    wmic ntdomain
+    ipconfig /all
+  Mac:
+    dsconfigad -show
+  LDAP:
+    ldapsearch -H ldap://test.local -b DC=test,DC=local "(objectclass=trusteddomain)"
